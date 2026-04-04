@@ -1,0 +1,10 @@
+bin/
+main
+
+.env
+
+vendor/
+
+
+.vscode/
+.idea/

@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # O seu Aplicativo em Go
+  api:
+    build: .
+    container_name: payment-api
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=payment_db
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  # Banco de Dados
+  postgres:
+    image: postgres:15-alpine
+    container_name: payment-postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=payment_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Mensageria (RabbitMQ)
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: payment-rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"   # Protocolo de mensagens
+      - "15672:15672" # Painel administrativo (User: guest / Pass: guest)
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+volumes:
+  postgres_data:
+  rabbitmq_data:
