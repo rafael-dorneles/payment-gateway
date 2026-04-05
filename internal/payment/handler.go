@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/rafael-dorneles/payment-gateway/internal/models"
 )
@@ -38,6 +39,28 @@ func (h *PaymentHandle) Create(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(transaction)
+}
+
+func (h *PaymentHandle) UpdateStatus(w http.ResponseWriter, r *http.Request) {
+
+	idParam := chi.URLParam(r, "id")
+	id, _ := uuid.Parse((idParam))
+
+	var body struct {
+		Status string `json : status`
+	}
+	json.NewDecoder(r.Body).Decode(&body)
+
+	err := h.service.UpdateStatus(id, body.Status)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
 }
 
 func (h *PaymentHandle) GetById(c *gin.Context) {

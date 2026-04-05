@@ -8,7 +8,8 @@ import (
 )
 
 type MockRepository struct {
-	OnCreate func(t *models.Transaction) error
+	OnCreate       func(t *models.Transaction) error
+	OnUpdateStatus func(id uuid.UUID, status string) error
 }
 
 func (m *MockRepository) GetById(id uuid.UUID) (*models.Transaction, error) {
@@ -16,11 +17,26 @@ func (m *MockRepository) GetById(id uuid.UUID) (*models.Transaction, error) {
 }
 
 func (m *MockRepository) UpdateStatus(id uuid.UUID, novoStatus string) error {
-	panic("unimplemented")
+	return m.OnUpdateStatus(id, novoStatus)
 }
 
 func (m *MockRepository) Create(t *models.Transaction) error {
 	return m.OnCreate(t)
+}
+
+func TestPaymentService_UpdateStatus(t *testing.T) {
+
+	t.Run("", func(t *testing.T) {
+		mockRepo := &MockRepository{}
+		service := NewPaymentService(mockRepo)
+		id := uuid.New()
+
+		err := service.UpdateStatus(id, "PAID")
+
+		if err == nil {
+			t.Error("Esperava um erro para valor zero, mas recebi nil")
+		}
+	})
 }
 
 func TestPayemntService_create(t *testing.T) {

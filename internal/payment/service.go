@@ -10,6 +10,7 @@ import (
 type PaymentService interface {
 	Create(record models.PaymentRequest) (*models.Transaction, error)
 	GetById(id uuid.UUID) (*models.Transaction, error)
+	UpdateStatus(id uuid.UUID, novoStatus string) error
 }
 
 type paymentService struct {
@@ -39,6 +40,25 @@ func (s *paymentService) Create(record models.PaymentRequest) (*models.Transacti
 	}
 
 	return tx, nil
+}
+
+func (s *paymentService) UpdateStatus(id uuid.UUID, novoStatus string) error {
+
+	payment, err := s.repo.GetById(id)
+
+	if err != nil {
+		return err
+	}
+
+	if payment.Status == "PAID" {
+		return errors.New("transicao liquidada ja alterada")
+	}
+
+	if payment.Status == "CANCELLED" {
+		return errors.New("Transicao ja cancelada")
+	}
+
+	return s.repo.UpdateStatus(id, novoStatus)
 }
 
 func (s *paymentService) GetById(id uuid.UUID) (*models.Transaction, error) {
