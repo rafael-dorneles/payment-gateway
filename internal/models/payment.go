@@ -2,23 +2,30 @@ package models
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
-// pagamento no sistema
 type Transaction struct {
-	ID        string    `json:"id"`
-	Amout     float64   `json:"amout"`
-	Currency  float64   `json:"currency"`
-	Status    string    `json:"status"`
-	CreatedAt time.Time `json:"created_id"`
-	UpdatedAt time.Time `json:"updated_id"`
+	ID         uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
+	ExternalID string    `gorm:"type:varchar(255);index" json:"external_id"`
+
+	Amount int64 `gorm:"not null" json:"amount"`
+
+	Currency string `gorm:"type:varchar(3);not null" json:"currency"`
+
+	Status string `gorm:"type:varchar(20);not null" json:"status"`
+
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// oq a api vai receber
-type PaytmentRequest struct {
-	CardNumber     string  `json:"card_number"`
-	CardName       string  `json:"card_name"`
-	ExpirationDate string  `json:"expiration_date"`
-	CVV            string  `json:"cvv"`
-	Amount         float64 `json:"amount"`
+// O que a API vai receber
+type PaymentRequest struct {
+	CardNumber     string `json:"card_number"`
+	CardName       string `json:"card_name"`
+	ExpirationDate string `json:"expiration_date"`
+	CVV            string `json:"cvv"`
+	Amount         int64  `json:"amount"`
+	Currency       string `json:"currency"`
 }
