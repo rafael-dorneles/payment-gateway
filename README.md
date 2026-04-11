@@ -36,7 +36,4 @@ Para evitar inconsistências entre o banco de dados e o broker de mensagens, imp
 * Docker & Docker Compose
 * Go 1.21+
 
-### Passo a passo
-1. Clone o repositório:
-   ```bash
-   git clone [https://github.com/seu-usuario/payment-gateway.git](https://github.com/seu-usuario/payment-gateway.git)
+
